@@ -35,6 +35,8 @@ use windows::{
     },
 };
 
+use webbrowser;
+
 /// Heart and soul of this integration.
 /// Main methods you are going to use are:
 /// * [`Self::present`] - Should be called inside of hook or before present.
@@ -156,6 +158,8 @@ impl DirectX11Renderer {
                 return Ok(());
             }
 
+            self.handle_platform_output(output.platform_output);
+
             let primitives = self
                 .context
                 .tessellate(output.shapes)
@@ -232,6 +236,18 @@ impl DirectX11Renderer {
             device.CreateRenderTargetView(&backbuffer, None, Some(&mut self.render_view))?;
             Ok(result)
         }
+    }
+
+    fn handle_platform_output(&mut self, platform_output: egui::PlatformOutput) {
+        if let Some(open_url) = platform_output.open_url {
+            open_url_in_browser(&open_url.url);    
+        }
+    }
+}
+
+fn open_url_in_browser(_url: &str) {
+    if let Err(err) = webbrowser::open(_url) {
+        // warn!("Failed to open url: {}", err);
     }
 }
 

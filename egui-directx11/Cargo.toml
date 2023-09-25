@@ -20,6 +20,7 @@ windows = { workspace = true, features = [
     "Win32_Graphics_Direct3D_Fxc",
     "Win32_UI_WindowsAndMessaging",
 ] }
+webbrowser = { workspace = true }
 
 [dev-dependencies]
 winit = "0.26"

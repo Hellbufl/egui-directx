@@ -8,6 +8,7 @@ license = "MIT"
 [workspace.dependencies]
 windows = "0.48.0"
 egui = "0.22.0"
+webbrowser = "0.8.11"
 
 # My blessed decisions.
 thiserror = "1.0.40"
