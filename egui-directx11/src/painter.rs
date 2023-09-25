@@ -36,6 +36,7 @@ use windows::{
 };
 
 use webbrowser;
+use arboard;
 
 /// Heart and soul of this integration.
 /// Main methods you are going to use are:
@@ -50,6 +51,7 @@ pub struct DirectX11Renderer {
     backup: BackupState,
     hwnd: HWND,
     context: egui::Context,
+    clipboard: arboard::Clipboard,
 }
 
 impl DirectX11Renderer {
@@ -124,6 +126,7 @@ impl DirectX11Renderer {
                 shaders,
                 hwnd,
                 context,
+                clipboard: arboard::Clipboard::new().unwrap(),
             })
         }
     }
@@ -239,6 +242,10 @@ impl DirectX11Renderer {
     }
 
     fn handle_platform_output(&mut self, platform_output: egui::PlatformOutput) {
+        if !platform_output.copied_text.is_empty() {
+            self.clipboard.set_text(platform_output.copied_text).unwrap();
+        }
+
         if let Some(open_url) = platform_output.open_url {
             open_url_in_browser(&open_url.url);    
         }
@@ -247,7 +254,7 @@ impl DirectX11Renderer {
 
 fn open_url_in_browser(_url: &str) {
     if let Err(err) = webbrowser::open(_url) {
-        // warn!("Failed to open url: {}", err);
+        println!("Failed to open url: {}", err);
     }
 }
 

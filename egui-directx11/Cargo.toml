@@ -21,6 +21,7 @@ windows = { workspace = true, features = [
     "Win32_UI_WindowsAndMessaging",
 ] }
 webbrowser = { workspace = true }
+arboard = { workspace = true }
 
 [dev-dependencies]
 winit = "0.26"

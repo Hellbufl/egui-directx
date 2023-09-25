@@ -9,6 +9,7 @@ license = "MIT"
 windows = "0.48.0"
 egui = "0.22.0"
 webbrowser = "0.8.11"
+arboard = "3.2.1"
 
 # My blessed decisions.
 thiserror = "1.0.40"
