@@ -138,8 +138,8 @@ impl TextureAllocator {
                 Quality: 0,
             },
             Usage: D3D11_USAGE_DYNAMIC,
-            BindFlags: D3D11_BIND_SHADER_RESOURCE,
-            CPUAccessFlags: D3D11_CPU_ACCESS_WRITE,
+            BindFlags: 0x8, //D3D11_BIND_SHADER_RESOURCE,
+            CPUAccessFlags: 0x10000, //D3D11_CPU_ACCESS_WRITE,
             ..Default::default()
         };
 

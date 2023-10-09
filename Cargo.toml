@@ -6,7 +6,7 @@ members = ["egui-directx9", "egui-directx11", "egui-directx12", "egui-win32"]
 license = "MIT"
 
 [workspace.dependencies]
-windows = "0.48.0"
+windows = "0.51.1"
 egui = "0.22.0"
 webbrowser = "0.8.11"
 arboard = "3.2.1"

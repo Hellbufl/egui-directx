@@ -9,7 +9,7 @@ use egui::{epaint::Primitive, Context};
 use std::mem::size_of;
 use windows::{
     core::HRESULT,
-    s,
+    core::s,
     Win32::{
         Foundation::{HWND, RECT},
         Graphics::{
@@ -229,8 +229,8 @@ impl DirectX11Renderer {
     pub fn resize_buffers(
         &mut self,
         swap_chain: &IDXGISwapChain,
-        original: impl FnOnce() -> HRESULT,
-    ) -> Result<HRESULT, RenderError> {
+        original: impl FnOnce() -> windows::core::Result<()>,
+    ) -> Result<windows::core::Result<()>, RenderError> {
         unsafe {
             drop(self.render_view.take());
             let result = original();
@@ -310,7 +310,7 @@ impl DirectX11Renderer {
             dev.CreateBlendState(&blend_desc, Some(&mut blend_state))?;
             let blend_state =
                 blend_state.ok_or(RenderError::General("Unable to set blend state"))?;
-            ctx.OMSetBlendState(&blend_state, Some([0., 0., 0., 0.].as_ptr()), 0xffffffff);
+            ctx.OMSetBlendState(&blend_state, Some(&[0., 0., 0., 0.]), 0xffffffff);
         }
 
         Ok(())
