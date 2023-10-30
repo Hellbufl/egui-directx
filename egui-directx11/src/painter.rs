@@ -31,7 +31,7 @@ use windows::{
                 IDXGISwapChain, DXGI_SWAP_CHAIN_DESC,
             },
         },
-        UI::WindowsAndMessaging::GetClientRect,
+        UI::WindowsAndMessaging::*,
     },
 };
 
@@ -249,12 +249,51 @@ impl DirectX11Renderer {
         if let Some(open_url) = platform_output.open_url {
             open_url_in_browser(&open_url.url);    
         }
+
+       set_cursor(platform_output.cursor_icon);
+    }    
+}
+
+fn open_url_in_browser(url: &str) {
+    if let Err(err) = webbrowser::open(url) {
+        println!("Failed to open url: {}", err);
     }
 }
 
-fn open_url_in_browser(_url: &str) {
-    if let Err(err) = webbrowser::open(_url) {
-        println!("Failed to open url: {}", err);
+fn set_cursor(cursor_icon: egui::CursorIcon) {
+    if cursor_icon == egui::CursorIcon::None {
+        unsafe { SetCursor(None) };
+        return;
+    }
+
+    let cursor_id = match cursor_icon {
+        egui::CursorIcon::Default => IDC_ARROW,
+        egui::CursorIcon::Help => IDC_HELP,
+        egui::CursorIcon::PointingHand => IDC_HAND,
+        egui::CursorIcon::Progress => IDC_APPSTARTING,
+        egui::CursorIcon::Wait => IDC_WAIT,
+        egui::CursorIcon::Crosshair => IDC_CROSS,
+        egui::CursorIcon::Text => IDC_IBEAM,
+        egui::CursorIcon::Move => IDC_SIZEALL,
+        egui::CursorIcon::NoDrop => IDC_NO,
+        egui::CursorIcon::NotAllowed => IDC_NO,
+        egui::CursorIcon::AllScroll => IDC_SIZEALL,
+        egui::CursorIcon::ResizeHorizontal => IDC_SIZEWE,
+        egui::CursorIcon::ResizeNeSw => IDC_SIZENESW,
+        egui::CursorIcon::ResizeNwSe => IDC_SIZENWSE,
+        egui::CursorIcon::ResizeVertical => IDC_SIZENS,
+        _ => IDC_ARROW
+    };
+
+    unsafe {
+        if let Ok(cursor) = LoadCursorW(None, cursor_id) {
+            let curr_cursor = GetCursor();
+            if cursor.clone() == curr_cursor {
+                return;
+            }
+
+            SetCursor(cursor);
+        }
     }
 }
 
