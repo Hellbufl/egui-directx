@@ -165,7 +165,7 @@ impl DirectX11Renderer {
 
             let primitives = self
                 .context
-                .tessellate(output.shapes)
+                .tessellate(output.shapes, self.context.pixels_per_point())
                 .into_iter()
                 .filter_map(|prim| {
                     if let Primitive::Mesh(mesh) = prim.primitive {

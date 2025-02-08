@@ -25,6 +25,7 @@ use windows::{
 
 pub struct InputManager {
     hwnd: HWND,
+    // ctx: Context,
     events: Vec<Event>,
     modifiers: Option<Modifiers>,
 }
@@ -58,9 +59,11 @@ impl InputResult {
 }
 
 impl InputManager {
+    // pub fn new(hwnd: HWND, ctx: Context) -> Self {
     pub fn new(hwnd: HWND) -> Self {
         Self {
             hwnd,
+            // ctx,
             events: vec![],
             modifiers: None,
         }
@@ -242,6 +245,7 @@ impl InputManager {
                         modifiers,
                         key,
                         repeat: lparam & (KF_REPEAT as isize) > 0,
+                        physical_key: None,
                     });
                 }
                 InputResult::Key
@@ -256,6 +260,7 @@ impl InputManager {
                         modifiers,
                         key,
                         repeat: false,
+                        physical_key: None,
                     });
                 }
                 InputResult::Key
@@ -271,18 +276,31 @@ impl InputManager {
     }
 
     pub fn collect_input(&mut self) -> Result<RawInput> {
-        Ok(RawInput {
-            modifiers: self.modifiers.unwrap_or_default(),
-            events: std::mem::take(&mut self.events),
-            screen_rect: Some(self.get_screen_rect()),
-            time: Some(Self::get_system_time()?),
-            pixels_per_point: Some(1.),
-            max_texture_side: None,
-            predicted_dt: 1. / 60.,
-            hovered_files: vec![],
-            dropped_files: vec![],
-            focused: true,
-        })
+        // Ok(RawInput {
+        //     modifiers: self.modifiers.unwrap_or_default(),
+        //     events: std::mem::take(&mut self.events),
+        //     screen_rect: Some(self.get_screen_rect()),
+        //     time: Some(Self::get_system_time()?),
+        //     pixels_per_point: Some(1.),
+        //     max_texture_side: None,
+        //     predicted_dt: 1. / 60.,
+        //     hovered_files: vec![],
+        //     dropped_files: vec![],
+        //     focused: true,
+        // })
+        let mut input = RawInput::default();
+
+        input.modifiers = self.modifiers.unwrap_or_default();
+        input.events = std::mem::take(&mut self.events);
+        input.screen_rect = Some(self.get_screen_rect());
+        input.time = Some(Self::get_system_time()?);
+        input.max_texture_side = None;
+        input.predicted_dt = 1. / 60.;
+        input.hovered_files = vec![];
+        input.dropped_files = vec![];
+        input.focused = true;
+
+        Ok(input)
     }
 
     /// Returns time in seconds.
@@ -353,9 +371,9 @@ fn get_key_modifiers(msg: u32) -> Modifiers {
 
 fn get_key(wparam: usize) -> Option<Key> {
     match wparam {
-        0x30..=0x39 => unsafe { Some(std::mem::transmute::<_, Key>(wparam as u8 - 0x1F)) },
-        0x41..=0x5A => unsafe { Some(std::mem::transmute::<_, Key>(wparam as u8 - 0x26)) },
-        0x70..=0x83 => unsafe { Some(std::mem::transmute::<_, Key>(wparam as u8 - 0x3B)) },
+        0x30..=0x39 => unsafe { Some(std::mem::transmute::<_, Key>(wparam as u8 - 0x10)) },
+        0x41..=0x5A => unsafe { Some(std::mem::transmute::<_, Key>(wparam as u8 - 0x17)) },
+        0x70..=0x87 => unsafe { Some(std::mem::transmute::<_, Key>(wparam as u8 - 0x2C)) },
         _ => match VIRTUAL_KEY(wparam as u16) {
             VK_DOWN => Some(Key::ArrowDown),
             VK_LEFT => Some(Key::ArrowLeft),
@@ -372,6 +390,10 @@ fn get_key(wparam: usize) -> Option<Key> {
             VK_END => Some(Key::End),
             VK_PRIOR => Some(Key::PageUp),
             VK_NEXT => Some(Key::PageDown),
+            VIRTUAL_KEY(187) => Some(Key::Plus),
+            VIRTUAL_KEY(188) => Some(Key::Comma),
+            VIRTUAL_KEY(189) => Some(Key::Minus),
+            VIRTUAL_KEY(190) => Some(Key::Period),
             _ => None,
         },
     }

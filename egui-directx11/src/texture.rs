@@ -146,7 +146,7 @@ impl TextureAllocator {
         // rust is cringe sometimes
         let width = image.width();
         let pixels = match image {
-            ImageData::Color(c) => c.pixels,
+            ImageData::Color(c) => c.pixels.clone(),
             ImageData::Font(f) => f
                 .pixels
                 .iter()
